@@ -6,6 +6,8 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 
 public class ReadingDao {
+
+    private static final String HINT_BYPASS_CACHE = "jakarta.persistence.cache.retrieveMode";
     public void save(Reading r) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
@@ -34,7 +36,7 @@ public class ReadingDao {
         List<Reading> results = em.createQuery(
                 "SELECT r FROM Reading r ORDER BY r.timestamp DESC",
                 Reading.class
-        ).setMaxResults(limit).getResultList();
+        ).setMaxResults(limit).setHint(HINT_BYPASS_CACHE, "BYPASS").getResultList();
         em.close();
         return results;
     }
@@ -44,6 +46,7 @@ public class ReadingDao {
         List<Reading> list = em.createQuery("SELECT r FROM Reading r WHERE r.device.id = :id", Reading.class)
                 .setParameter("id", deviceId)
                 //.setMaxResults(50)
+                .setHint(HINT_BYPASS_CACHE, "BYPASS")
                 .getResultList();
         em.close();
         return list;
@@ -54,6 +57,7 @@ public class ReadingDao {
         List<Reading> list = em.createQuery("SELECT r FROM Reading r WHERE r.readingType = :t", Reading.class)
                 .setParameter("t", type)
                 //.setMaxResults(50)
+                .setHint(HINT_BYPASS_CACHE, "BYPASS")
                 .getResultList();
         em.close();
         return list;
@@ -66,6 +70,7 @@ public class ReadingDao {
                 .setParameter("id", deviceId)
                 .setParameter("t", type)
                 //.setMaxResults(50)
+                .setHint(HINT_BYPASS_CACHE, "BYPASS")
                 .getResultList();
         em.close();
         return list;
@@ -74,7 +79,7 @@ public class ReadingDao {
     public List<Reading> findAll() {
         EntityManager em = JpaUtil.getEntityManager();
         List<Reading> list = em.createQuery("SELECT r FROM Reading r", Reading.class)
-                .getResultList();
+                .setHint(HINT_BYPASS_CACHE, "BYPASS").getResultList();
         em.close();
         return list;
     }

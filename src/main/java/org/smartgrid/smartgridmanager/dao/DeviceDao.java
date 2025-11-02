@@ -6,6 +6,8 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 
 public class DeviceDao {
+
+    private static final String HINT_BYPASS_CACHE = "jakarta.persistence.cache.retrieveMode";
     public void save(Device d) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
@@ -15,7 +17,7 @@ public class DeviceDao {
     }
     public List<Device> findAll() {
         EntityManager em = JpaUtil.getEntityManager();
-        List<Device> list = em.createQuery("SELECT d FROM Device d", Device.class).getResultList();
+        List<Device> list = em.createQuery("SELECT d FROM Device d", Device.class).setHint(HINT_BYPASS_CACHE, "BYPASS").getResultList();
         em.close();
         return list;
     }
@@ -28,7 +30,7 @@ public class DeviceDao {
     public List<Device> findAllWithReadings() {
         EntityManager em = JpaUtil.getEntityManager();
         List<Device> list = em.createQuery("SELECT DISTINCT d FROM Device d LEFT JOIN FETCH d.readings", Device.class)
-                .getResultList();
+                .setHint(HINT_BYPASS_CACHE, "BYPASS").getResultList();
         em.close();
         return list;
     }
