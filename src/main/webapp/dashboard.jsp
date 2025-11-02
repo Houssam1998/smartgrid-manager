@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
-    // Si on accède directement à index.jsp, rediriger vers le servlet
+    // Si on accède directement à dashboard.jsp, rediriger vers le servlet
     if (request.getAttribute("deviceCount") == null) {
         response.sendRedirect(request.getContextPath() + "/home");
         return;
@@ -32,7 +32,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/home">⚡ SmartGrid Manager</a>
+        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/landing.jsp">⚡ SmartGrid Manager</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">

@@ -23,7 +23,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/home">⚡ SmartGrid Manager</a>
+        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/landing.jsp">⚡ SmartGrid Manager</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Home</a></li>

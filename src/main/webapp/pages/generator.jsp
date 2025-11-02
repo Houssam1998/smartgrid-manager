@@ -169,7 +169,7 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0,0,0,0.1);">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/home">
+        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/landing.jsp">
             <i class="fas fa-bolt"></i> SmartGrid Manager
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

@@ -66,7 +66,7 @@ public class HomeServlet extends HttpServlet {
             req.setAttribute("latestReadings", latestReadings);
 
             // 🔹 Forward vers la page d'accueil
-            req.getRequestDispatcher("/index.jsp").forward(req, resp);
+            req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
 
         } catch (Exception e) {
             logger.severe("Error in HomeServlet: " + e.getMessage());
