@@ -221,7 +221,7 @@
 </div>
 
 <script>
-    // --- Average Power Chart (Existant) ---
+    // --- Average Power Chart ---
     const ctxPower = document.getElementById('chartPower');
     new Chart(ctxPower, {
         type: 'bar',
@@ -238,12 +238,39 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } },
-            plugins: { legend: { display: false } }
+            scales: {
+                y: {
+                    beginAtZero: true
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 30,
+                        font: {
+                            size: 10 // Réduire la taille de police
+                        },
+                        padding: 5 // Espacement
+                    },
+                    grid: {
+                        display: false // Masquer la grille verticale pour plus d'espace
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            },
+            layout: {
+                padding: {
+                    left: 5,
+                    right: 5,
+                    top: 0,
+                    bottom: 20 // Plus d'espace en bas pour les labels inclinés
+                }
+            }
         }
     });
 
-    // --- Average Temperature Chart (Existant) ---
+    // --- Average Temperature Chart ---
     const ctxTemp = document.getElementById('chartTemp');
     new Chart(ctxTemp, {
         type: 'line',
@@ -261,8 +288,35 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } },
-            plugins: { legend: { display: false } }
+            scales: {
+                y: {
+                    beginAtZero: true
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 30,
+                        font: {
+                            size: 10
+                        },
+                        padding: 5
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            },
+            layout: {
+                padding: {
+                    left: 5,
+                    right: 5,
+                    top: 0,
+                    bottom: 20
+                }
+            }
         }
     });
 

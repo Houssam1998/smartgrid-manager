@@ -17,7 +17,7 @@
         .card { border-radius: 12px; }
         .summary-num { font-size: 1.8rem; font-weight: 700; }
         .mini-chart-container {
-            height: 120px;
+            height: 280px; /* ÉTAIT 120px */
             width: 100%;
             position: relative;
         }

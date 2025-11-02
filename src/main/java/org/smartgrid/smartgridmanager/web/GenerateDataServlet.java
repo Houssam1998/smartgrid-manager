@@ -66,7 +66,7 @@ public class GenerateDataServlet extends HttpServlet {
 
         long startTime = System.currentTimeMillis();
         EntityManager em = null;
-
+        boolean generationFailed = false;
         try {
             // 📊 Récupération des paramètres
             int deviceCount = getIntParam(req, "deviceCount", 10);
@@ -129,25 +129,27 @@ public class GenerateDataServlet extends HttpServlet {
                 logger.info("✅ Device created: " + deviceName + " (" + location + ")");
 
                 // 📊 Génération des readings
-                LocalDateTime baseTime = LocalDateTime.now().minusDays(30);
+                LocalDateTime baseTime = LocalDateTime.now();
 
                 for (int i = 0; i < readingsPerDevice; i++) {
-                    // ⏰ Incrémenter le temps (5 à 60 minutes)
+                    // ⏰ Incrémenter le temps
                     int minutesIncrement = 5 + RND.nextInt(56);
-                    LocalDateTime timestamp = baseTime.plusMinutes((long) i * minutesIncrement);
 
-                    // 📡 Sélection du type de reading
+
+                    // Aller en ARRIÈRE, pour que i=0 soit le plus récent
+                    LocalDateTime timestamp = baseTime.minusMinutes((long) i * minutesIncrement);
+                    // =================================================================
+
+
+                    // ... (Sélection du type et génération de la valeur, c'est correct) ...
                     String readingType;
                     if (fixedReadingType != null && Arrays.asList(template.readingTypes).contains(fixedReadingType)) {
                         readingType = fixedReadingType;
                     } else {
                         readingType = template.readingTypes[RND.nextInt(template.readingTypes.length)];
                     }
-
-                    // 🎲 Génération de la valeur
                     boolean shouldAlert = RND.nextDouble() < alertProbability;
                     double value = generateValue(readingType, shouldAlert, timestamp);
-
                     if (shouldAlert) {
                         alertReadings++;
                     }
@@ -160,7 +162,11 @@ public class GenerateDataServlet extends HttpServlet {
                     if (i % 100 == 0) {
                         em.flush();
                         em.clear();
+                        // Il faut recharger le device après un clear()
                         device = em.find(Device.class, device.getId());
+                        if (device == null) {
+                            throw new IllegalStateException("Device not found after flush/clear. ID: " + device.getId());
+                        }
                     }
                 }
             }
@@ -178,17 +184,25 @@ public class GenerateDataServlet extends HttpServlet {
 
             logger.info("🎉 " + successMessage);
             req.setAttribute("message", successMessage);
+            // 🔹 IMPORTANT : Utiliser la Session pour le message de succès
+            // req.setAttribute ne survit pas à une redirection
+            HttpSession session = req.getSession();
+            session.setAttribute("message", successMessage);
 
         } catch (NumberFormatException e) {
             logger.severe("❌ Invalid number format: " + e.getMessage());
             req.setAttribute("error", "Invalid number format in parameters");
         } catch (Exception e) {
+            // 🔹 CORRECTION : Marquer l'échec
+            generationFailed = true;
             logger.severe("❌ Error during data generation: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(); // REGARDEZ VOS LOGS SERVEUR (catalina.out) !
             if (em != null && em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+            // 🔹 Transmettre l'erreur
             req.setAttribute("error", "Error generating data: " + e.getMessage());
+
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -196,14 +210,34 @@ public class GenerateDataServlet extends HttpServlet {
         }
 
         // 🔄 Redirection vers la page d'accueil
-        resp.sendRedirect(req.getContextPath() + "/generator");
+        if (generationFailed) {
+            // Échec : Transférer la requête (pour garder le message d'erreur)
+            logger.warning("Generation failed, forwarding to JSP to show error.");
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/pages/generator.jsp");
+            dispatcher.forward(req, resp);
+        } else {
+            // Succès : Rediriger (pour éviter la re-soumission du formulaire)
+            logger.info("Generation successful, redirecting to generator page.");
+            resp.sendRedirect(req.getContextPath() + "/generator");
+        }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Rediriger les GET vers la page d'accueil
-        resp.sendRedirect(req.getContextPath() + "/home");
+        // 🔹 CORRECTION : Nous devons gérer le message de succès de la Session ici
+        HttpSession session = req.getSession(false); // Ne pas créer de nouvelle session
+        if (session != null) {
+            String message = (String) session.getAttribute("message");
+            if (message != null) {
+                req.setAttribute("message", message);
+                // Retirer le message pour qu'il n'apparaisse qu'une fois
+                session.removeAttribute("message");
+            }
+        }
+
+        // Afficher la page du générateur
+        req.getRequestDispatcher("/pages/generator.jsp").forward(req, resp);
     }
 
     /**
