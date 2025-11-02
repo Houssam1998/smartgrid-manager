@@ -12,7 +12,16 @@ import java.util.logging.Logger;
 public class StatsDao {
 
     private static final Logger logger = Logger.getLogger(StatsDao.class.getName());
+    private static final String HINT_BYPASS_CACHE = "jakarta.persistence.cache.retrieveMode";
 
+    private static final String ALERT_CRITERIA_JPQL =
+            " (r.readingType = 'power' AND r.value > 5000) " +
+                    " OR (r.readingType = 'temperature' AND r.value > 35) " +
+                    " OR (r.readingType = 'voltage' AND r.value > 250) " +
+                    " OR (r.readingType = 'current' AND r.value > 40) " +
+                    " OR (r.readingType = 'humidity' AND r.value < 10) " + // Humidité basse
+                    " OR (r.readingType = 'humidity' AND r.value > 90) " + // Humidité haute
+                    " OR (r.readingType = 'co2' AND r.value > 1000) ";
     // Stats par type : avg, min, max
     public List<Object[]> getStats() {
         EntityManager em = JpaUtil.getEntityManager();
@@ -67,6 +76,7 @@ public class StatsDao {
             logger.info("Executing JPQL: " + jpql);
             List<Object[]> result = em.createQuery(jpql, Object[].class)
                     .setMaxResults(10)
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
 
             logger.info("Found " + result.size() + " power devices for chart");
@@ -95,6 +105,7 @@ public class StatsDao {
                                     "GROUP BY d.name",
                             Object[].class)
                     .setMaxResults(10)
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
             return result;
         } catch (Exception e) {
@@ -111,13 +122,14 @@ public class StatsDao {
     public List<Object[]> getAlerts() {
         EntityManager em = JpaUtil.getEntityManager();
         try {
-            List<Object[]> result = em.createQuery(
-                            "SELECT d.name, r.readingType, r.value, r.timestamp " +
-                                    "FROM Reading r JOIN r.device d " +
-                                    "WHERE (r.readingType = 'power' AND r.value > 5000) " +
-                                    "   OR (r.readingType = 'temperature' AND r.value > 35) " +
-                                    "   OR (r.readingType = 'co2' AND r.value > 1000)",
-                            Object[].class)
+            String jpql = "SELECT d.name, r.readingType, r.value, r.timestamp " +
+                    "FROM Reading r JOIN r.device d " +
+                    "WHERE " + ALERT_CRITERIA_JPQL + // Utilise la définition
+                    "ORDER BY r.timestamp DESC";
+
+            List<Object[]> result = em.createQuery(jpql, Object[].class)
+                    .setMaxResults(100) // Garder la limite pour l'affichage
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
             return result;
         } catch (Exception e) {
@@ -193,15 +205,12 @@ public class StatsDao {
         try {
             String jpql = "SELECT d.name, r.readingType, r.value, r.timestamp " +
                     "FROM Reading r JOIN r.device d " +
-                    "WHERE (r.readingType = 'power' AND r.value > 5000) " +
-                    "   OR (r.readingType = 'temperature' AND r.value > 35) " +
-                    "   OR (r.readingType = 'voltage' AND r.value > 250) " +
-                    "   OR (r.readingType = 'current' AND r.value > 40) " +
-                    "   OR (r.readingType = 'humidity' AND r.value < 10) " +
+                    "WHERE " + ALERT_CRITERIA_JPQL + // Utilise la définition
                     "ORDER BY r.timestamp DESC";
 
             List<Object[]> res = em.createQuery(jpql, Object[].class)
                     .setMaxResults(limit)
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
 
             logger.info("Found " + res.size() + " recent alerts");
@@ -209,6 +218,29 @@ public class StatsDao {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in getRecentAlerts", e);
             return new ArrayList<>();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    public Long getTotalAlertCount() {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            String jpql = "SELECT COUNT(r) FROM Reading r JOIN r.device d WHERE " + ALERT_CRITERIA_JPQL;
+
+            Long count = em.createQuery(jpql, Long.class).getSingleResult();
+
+            logger.info("Total alert count: " + count);
+            return (count != null) ? count : 0L;
+
+        } catch (NoResultException e) {
+            logger.info("No alerts found.");
+            return 0L;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in getTotalAlertCount", e);
+            return 0L;
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -225,12 +257,38 @@ public class StatsDao {
 
             List<Reading> res = em.createQuery(jpql, Reading.class)
                     .setMaxResults(limit)
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
 
             logger.info("Found " + res.size() + " latest readings");
             return res;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in getLatestReadings", e);
+            return new ArrayList<>();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    public List<Reading> getReadingsForChart(Long deviceId, String type) {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            String jpql = "SELECT r FROM Reading r " +
+                    "WHERE r.device.id = :id AND r.readingType = :t " +
+                    "ORDER BY r.timestamp ASC"; // Tri ASC pour un graphique chronologique
+
+            List<Reading> readings = em.createQuery(jpql, Reading.class)
+                    .setParameter("id", deviceId)
+                    .setParameter("t", type)
+                    .setMaxResults(1000) // Limiter à 1000 points pour la performance
+                    .getResultList();
+
+            logger.info("StatsDao: Found " + readings.size() + " readings for chart (Device: " + deviceId + ", Type: " + type + ")");
+            return readings;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in getReadingsForChart", e);
             return new ArrayList<>();
         } finally {
             if (em != null && em.isOpen()) {

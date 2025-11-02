@@ -53,7 +53,9 @@ public class HomeServlet extends HttpServlet {
             // 🔹 Alerts récentes
             List<Object[]> recentAlerts = statsDao.getRecentAlerts(5);
             req.setAttribute("recentAlerts", recentAlerts);
-            req.setAttribute("alertCount", (recentAlerts == null) ? 0 : recentAlerts.size());
+            //alertes totales
+            Long totalAlertCount = statsDao.getTotalAlertCount();
+            req.setAttribute("alertCount", totalAlertCount);
 
             // 🔹 Dernières lectures
             List<Reading> latestReadings = statsDao.getLatestReadings(5);

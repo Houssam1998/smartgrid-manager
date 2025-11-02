@@ -168,6 +168,7 @@ public class GenerateDataServlet extends HttpServlet {
             em.getTransaction().commit();
             long endTime = System.currentTimeMillis();
 
+
             // 🎉 Message de succès
             String successMessage = String.format(
                     "✅ Generated %,d readings from %d devices in %,d ms | Alerts: %d (%.1f%%)",

@@ -11,5 +11,6 @@ public class JpaUtil {
     public static EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
+
     public static void close() { emf.close(); }
 }
