@@ -76,13 +76,13 @@ import java.util.*;
 
 public class DataGenerator {
 
-    // 🏠 Définition des zones de la grande maison
+    // Définition des zones de la grande maison
     private static final String[] LOCATIONS = {
             "Living Room", "Kitchen", "Master Bedroom", "Guest Bedroom",
             "Bathroom", "Garage", "Garden", "Basement", "Attic", "Office"
     };
 
-    // 📊 Types de devices avec leurs mesures possibles
+    // Types de devices avec leurs mesures possibles
     private static enum DeviceTemplate {
         SMART_METER("SmartMeter", new String[]{"power", "voltage", "current"}),
         THERMOSTAT("Thermostat", new String[]{"temperature", "humidity"}),
@@ -106,7 +106,7 @@ public class DataGenerator {
         }
     }
 
-    // 🎯 Seuils d'alerte
+    // Seuils d'alerte
     private static class Thresholds {
         static final double POWER_ALERT = 5000.0;      // > 5000W
         static final double TEMP_ALERT = 35.0;         // > 35°C
@@ -120,14 +120,14 @@ public class DataGenerator {
     private static final Random RND = new Random();
 
     /**
-     * 🎲 Génération de données aléatoires complètes
+     * Génération de données aléatoires complètes
      */
     public static void generateRandomData(int devicesCount, int readingsPerDevice) {
         generateData(devicesCount, readingsPerDevice, null, null, null, null);
     }
 
     /**
-     * 🎯 Génération de données avec paramètres fixés
+     * Génération de données avec paramètres fixés
      *
      * @param devicesCount Nombre de devices à créer
      * @param readingsPerDevice Nombre de lectures par device
@@ -228,7 +228,7 @@ public class DataGenerator {
     }
 
     /**
-     * 🎲 Génère une valeur réaliste selon le type de mesure
+     *  Génère une valeur réaliste selon le type de mesure
      */
     private static double generateValue(String readingType, boolean shouldAlert, LocalDateTime timestamp) {
         int hour = timestamp.getHour();
@@ -284,7 +284,7 @@ public class DataGenerator {
     }
 
     /**
-     * 🔍 Trouve un template de device par type
+     * Trouve un template de device par type
      */
     private static DeviceTemplate findTemplateByType(String type) {
         for (DeviceTemplate t : DeviceTemplate.values()) {
@@ -296,7 +296,7 @@ public class DataGenerator {
     }
 
     /**
-     * 🚀 Point d'entrée principal
+     *  Point d'entrée principal
      */
     public static void main(String[] args) {
         // Exemple 1: Génération complètement aléatoire

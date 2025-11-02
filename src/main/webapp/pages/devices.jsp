@@ -9,7 +9,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/index.jsp">⚡ SmartGrid Manager</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/landing.jsp">⚡ SmartGrid Manager</a>
     </div>
 </nav>
 

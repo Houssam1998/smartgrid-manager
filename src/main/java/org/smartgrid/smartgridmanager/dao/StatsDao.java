@@ -275,6 +275,34 @@ public class StatsDao {
         }
     }
 
+    public List<Object[]> getRecentSecurityAlerts(int limit) {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            // Requête ciblée sur les caméras de sécurité et les lectures de mouvement
+            String jpql = "SELECT d.name, r.timestamp, d.location " +
+                    "FROM Reading r JOIN r.device d " +
+                    "WHERE d.deviceType = 'SecurityCamera' AND r.readingType = 'motion' AND r.value = 1 " +
+                    "ORDER BY r.timestamp DESC";
+
+            List<Object[]> res = em.createQuery(jpql, Object[].class)
+                    .setMaxResults(limit)
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
+                    .setHint("org.hibernate.cacheable", false) // Ajout du 2e hint pour être sûr
+                    .getResultList();
+
+            logger.info("Found " + res.size() + " recent security alerts");
+            return res;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in getRecentSecurityAlerts", e);
+            return new ArrayList<>();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+
     public List<Reading> getReadingsForChart(Long deviceId, String type) {
         EntityManager em = JpaUtil.getEntityManager();
         try {

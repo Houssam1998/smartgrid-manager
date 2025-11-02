@@ -12,7 +12,7 @@ import org.smartgrid.smartgridmanager.dao.DeviceDao;
 import org.smartgrid.smartgridmanager.dao.ReadingDao;
 import org.smartgrid.smartgridmanager.model.Reading;
 
-@WebServlet({"/", "/home"})
+@WebServlet("/home")
 public class HomeServlet extends HttpServlet {
 
     private static final Logger logger = Logger.getLogger(HomeServlet.class.getName());
@@ -49,6 +49,10 @@ public class HomeServlet extends HttpServlet {
             }
 
             req.setAttribute("avgPower", avgPower);
+
+            //  Nous appelons maintenant la nouvelle méthode pour la section spécialisée
+            List<Object[]> securityAlerts = statsDao.getRecentSecurityAlerts(5);
+            req.setAttribute("securityAlerts", securityAlerts);
 
             // 🔹 Alerts récentes
             List<Object[]> recentAlerts = statsDao.getRecentAlerts(5);

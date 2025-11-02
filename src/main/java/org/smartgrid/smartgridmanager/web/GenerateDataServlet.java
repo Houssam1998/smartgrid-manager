@@ -116,7 +116,7 @@ public class GenerateDataServlet extends HttpServlet {
                     template = DeviceTemplate.values()[RND.nextInt(DeviceTemplate.values().length)];
                 }
 
-                // 📍 Sélection de la localisation
+                //  Sélection de la localisation
                 String location = (fixedLocation != null)
                         ? fixedLocation
                         : LOCATIONS[RND.nextInt(LOCATIONS.length)];
@@ -128,7 +128,7 @@ public class GenerateDataServlet extends HttpServlet {
 
                 logger.info("✅ Device created: " + deviceName + " (" + location + ")");
 
-                // 📊 Génération des readings
+                // Génération des readings
                 LocalDateTime baseTime = LocalDateTime.now();
 
                 for (int i = 0; i < readingsPerDevice; i++) {
@@ -175,7 +175,7 @@ public class GenerateDataServlet extends HttpServlet {
             long endTime = System.currentTimeMillis();
 
 
-            // 🎉 Message de succès
+            //  Message de succès
             String successMessage = String.format(
                     "✅ Generated %,d readings from %d devices in %,d ms | Alerts: %d (%.1f%%)",
                     totalReadings, deviceCount, (endTime - startTime),
@@ -209,7 +209,7 @@ public class GenerateDataServlet extends HttpServlet {
             }
         }
 
-        // 🔄 Redirection vers la page d'accueil
+        //  Redirection vers la page d'accueil
         if (generationFailed) {
             // Échec : Transférer la requête (pour garder le message d'erreur)
             logger.warning("Generation failed, forwarding to JSP to show error.");
@@ -241,7 +241,7 @@ public class GenerateDataServlet extends HttpServlet {
     }
 
     /**
-     * 🎲 Génère une valeur réaliste selon le type de mesure
+     * Génère une valeur réaliste selon le type de mesure
      */
     private double generateValue(String readingType, boolean shouldAlert, LocalDateTime timestamp) {
         int hour = timestamp.getHour();
@@ -293,7 +293,7 @@ public class GenerateDataServlet extends HttpServlet {
     }
 
     /**
-     * 🔍 Trouve un template de device par type
+     *  Trouve un template de device par type
      */
     private DeviceTemplate findTemplateByType(String type) {
         for (DeviceTemplate t : DeviceTemplate.values()) {
@@ -306,7 +306,7 @@ public class GenerateDataServlet extends HttpServlet {
     }
 
     /**
-     * 📊 Récupère un paramètre entier
+     * Récupère un paramètre entier
      */
     private int getIntParam(HttpServletRequest req, String paramName, int defaultValue) {
         String value = req.getParameter(paramName);

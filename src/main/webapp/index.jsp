@@ -70,57 +70,49 @@
     </div>
 
     <!-- Résumé (cartes) -->
-    <div class="row mb-4 text-center">
-        <div class="col-md-3 mb-3">
-            <div class="card p-3 shadow-sm">
-                <div class="text-muted">Total Devices</div>
-                <div class="summary-num">${deviceCount}</div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card p-3 shadow-sm">
-                <div class="text-muted">Total Readings</div>
-                <div class="summary-num">${readingCount}</div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card p-3 shadow-sm">
-                <div class="text-muted">Avg Power (W)</div>
-                <div class="summary-num">${avgPowerGlobal}</div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card p-3 shadow-sm">
-                <div class="text-muted">Active Alerts</div>
-                <div class="summary-num text-danger">${alertCount}</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mini chart + Alerts récents + Last readings -->
     <div class="row mb-4">
-        <!-- mini chart consommation -->
-        <div class="col-md-6 mb-3">
+        <div class="col-md-12 mb-3">
             <div class="card p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="mb-0">Top 10 Avg Power (by device)</h5>
                     <small class="text-muted">Live snapshot</small>
                 </div>
-                <div class="mini-chart-container">
+                <div class="mini-chart-container" style="height: 280px;">
                     <canvas id="miniPowerChart"></canvas>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Alerts récentes -->
-        <div class="col-md-3 mb-3">
+    <div class="row mb-4">
+
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 shadow-sm border border-danger">
+                <h6 class="mb-2 text-danger">🚨 Intrusion Alerts</h6>
+                <div class="alerts-list">
+                    <c:if test="${not empty securityAlerts}">
+                        <ul class="list-group list-group-flush">
+                            <c:forEach var="sa" items="${securityAlerts}">
+                                <li class="list-group-item px-1">
+                                    <strong>${sa[0]}</strong> <div class="text-muted small">Location: <span class="fw-bold">${sa[2]}</span></div> <div class="text-muted small">${sa[1]}</div> </li>
+                            </c:forEach>
+                        </ul>
+                    </c:if>
+                    <c:if test="${empty securityAlerts}">
+                        <div class="text-muted text-center p-3">No intrusion alerts detected.</div>
+                    </c:if>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
             <div class="card p-3 shadow-sm">
-                <h6 class="mb-2">Recent Alerts</h6>
+                <h6 class="mb-2">Recent General Alerts</h6>
                 <div class="alerts-list">
                     <c:if test="${not empty recentAlerts}">
                         <ul class="list-group list-group-flush">
                             <c:forEach var="a" items="${recentAlerts}">
-                                <li class="list-group-item">
+                                <li class="list-group-item px-1">
                                     <strong>${a[0]}</strong> — ${a[1]} = <span class="text-danger">${a[2]}</span>
                                     <div class="text-muted small">${a[3]}</div>
                                 </li>
@@ -128,21 +120,20 @@
                         </ul>
                     </c:if>
                     <c:if test="${empty recentAlerts}">
-                        <div class="text-muted">No alerts</div>
+                        <div class="text-muted text-center p-3">No general alerts.</div>
                     </c:if>
                 </div>
             </div>
         </div>
 
-        <!-- Last readings -->
-        <div class="col-md-3 mb-3">
+        <div class="col-md-4 mb-3">
             <div class="card p-3 shadow-sm">
                 <h6 class="mb-2">Latest Readings</h6>
-                <div style="max-height:220px; overflow-y:auto;">
+                <div class="alerts-list">
                     <c:if test="${not empty latestReadings}">
                         <ul class="list-group list-group-flush">
                             <c:forEach var="r" items="${latestReadings}">
-                                <li class="list-group-item">
+                                <li class="list-group-item px-1">
                                     <div><strong>${r.device.name}</strong> — ${r.readingType} = ${r.value}</div>
                                     <div class="text-muted small">${r.timestamp}</div>
                                 </li>
@@ -150,7 +141,7 @@
                         </ul>
                     </c:if>
                     <c:if test="${empty latestReadings}">
-                        <div class="text-muted">No recent readings</div>
+                        <div class="text-muted text-center p-3">No recent readings.</div>
                     </c:if>
                 </div>
             </div>
