@@ -3,7 +3,8 @@ package org.smartgrid.smartgridmanager.dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.smartgrid.smartgridmanager.model.Reading;
-
+import org.smartgrid.smartgridmanager.model.Device; // Assurez-vous que cet import est présent
+import jakarta.persistence.QueryHint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -29,6 +30,7 @@ public class StatsDao {
             List<Object[]> stats = em.createQuery(
                             "SELECT r.readingType, AVG(r.value), MIN(r.value), MAX(r.value) " +
                                     "FROM Reading r GROUP BY r.readingType", Object[].class)
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
             logger.info("Stats by type: " + stats.size() + " types found");
             return stats;
@@ -50,6 +52,7 @@ public class StatsDao {
                             "SELECT d.name, COUNT(r.id) " +
                                     "FROM Device d LEFT JOIN d.readings r " +
                                     "GROUP BY d.name", Object[].class)
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
             logger.info("Counts by device: " + counts.size() + " devices found");
             return counts;
@@ -283,6 +286,7 @@ public class StatsDao {
                     .setParameter("id", deviceId)
                     .setParameter("t", type)
                     .setMaxResults(1000) // Limiter à 1000 points pour la performance
+                    .setHint(HINT_BYPASS_CACHE, "BYPASS")
                     .getResultList();
 
             logger.info("StatsDao: Found " + readings.size() + " readings for chart (Device: " + deviceId + ", Type: " + type + ")");
