@@ -1,0 +1,62 @@
+/* Définir la largeur de la sidebar */
+:root {
+    --sidebar-width: 260px;
+}
+
+body {
+    background-color: #f8f9fa; /* Fond gris clair pour le contenu */
+}
+
+.sidebar {
+    position: fixed; /* Reste en place lors du défilement */
+    top: 0;
+    left: 0;
+    height: 100vh; /* Pleine hauteur */
+    width: var(--sidebar-width); /* Utilise notre variable */
+    padding: 1.5rem;
+    background-color: #1a253c; /* Couleur sombre pour la sidebar */
+    color: white;
+}
+
+.sidebar-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 2rem;
+    display: block;
+}
+.sidebar-header i {
+    margin-right: 10px;
+}
+
+.sidebar .nav-link {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+    color: #adb5bd; /* Liens gris clair */
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .nav-link i {
+    margin-right: 12px;
+    width: 20px; /* Aligner les icônes */
+    text-align: center;
+}
+
+.sidebar .nav-link:hover {
+    color: white;
+    background-color: #2a3b5a;
+}
+
+.sidebar .nav-link.active {
+    color: white;
+    font-weight: 500;
+    background-color: #0d6efd; /* Couleur bleue (Bootstrap primary) pour le lien actif */
+}
+
+/* Le conteneur principal qui contient votre page */
+.main-content {
+    margin-left: var(--sidebar-width); /* Pousse le contenu pour ne pas être sous la sidebar */
+    padding: 2rem;
+}
