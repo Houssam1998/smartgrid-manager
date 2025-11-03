@@ -110,7 +110,7 @@
     </div>
 
     <div class="text-center mt-4">
-        <a href="${pageContext.request.contextPath}/" class="btn btn-outline-secondary">⬅ Back to Home</a>
+        <a href="${pageContext.request.contextPath}/dashboard.jsp" class="btn btn-outline-secondary">⬅ Back to Home</a>
     </div>
 </div>
 

@@ -27,13 +27,13 @@ public class DeviceDao {
         em.close();
         return d;
     }
-    public List<Device> findAllWithReadings() {
-        EntityManager em = JpaUtil.getEntityManager();
-        List<Device> list = em.createQuery("SELECT DISTINCT d FROM Device d LEFT JOIN FETCH d.readings", Device.class)
-                .setHint(HINT_BYPASS_CACHE, "BYPASS").getResultList();
-        em.close();
-        return list;
-    }
+//    public List<Device> findAllWithReadings() {
+//        EntityManager em = JpaUtil.getEntityManager();
+//        List<Device> list = em.createQuery("SELECT DISTINCT d FROM Device d LEFT JOIN FETCH d.readings", Device.class)
+//                .setHint(HINT_BYPASS_CACHE, "BYPASS").getResultList();
+//        em.close();
+//        return list;
+//    }
     public void delete(Long id) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
