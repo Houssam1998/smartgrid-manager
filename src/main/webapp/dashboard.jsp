@@ -11,22 +11,24 @@
     <title>Dashboard - SmartGrid Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
 
     <style>
+        body {
+            /* 🔹 AJOUTÉ : Empêche le contenu d'être caché sous la navbar 🔹 */
+            background-color: #f8f9fa;
+        }
         .card { border-radius: 12px; }
         .summary-num { font-size: 1.8rem; font-weight: 700; }
         .alerts-list { max-height: 220px; overflow-y: auto; }
         .chart-container { height: 280px; width: 100%; position: relative; }
     </style>
 </head>
-<body>
+<body class="bg-light">
 
-<jsp:include page="/pages/_sidebar.jsp" />
+<jsp:include page="/pages/_navbar.jsp" />
 
-<div class="main-content">
+<div class="container mt-4">
 
     <div class="row mb-4 text-center">
         <div class="col-md-3 mb-3">
@@ -133,7 +135,8 @@
         </a>
     </div>
 
-</div> <script>
+</div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
     // --- Graphique 1 : Top 10 Power ---
     const labels = [<c:choose><c:when test="${not empty avgPower}"><c:forEach var="row" items="${avgPower}" varStatus="status">'<c:out value="${row[0]}" />'<c:if test="${!status.last}">,</c:if></c:forEach></c:when><c:otherwise>'No data'</c:otherwise></c:choose>];
     const dataPoints = [<c:choose><c:when test="${not empty avgPower}"><c:forEach var="row" items="${avgPower}" varStatus="status">${row[1]}<c:if test="${!status.last}">,</c:if></c:forEach></c:when><c:otherwise>0</c:otherwise></c:choose>];
